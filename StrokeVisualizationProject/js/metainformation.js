@@ -35,7 +35,7 @@ function viewSpec (projectionType,viewType)
         this.viewMode="Normal"
     }
     else{
-        this.viewMode="Normal"
+        this.viewMode="Hybrid"
     }
 
     this.projection={x:"x",y:"y"}
@@ -57,6 +57,34 @@ function viewSpec (projectionType,viewType)
     this.getProjection=function(){
         return this.projection
     }
+
+    this.setViewMode=function(view){
+        this.viewMode=view
+    }
+
+    this.setProjection=function(projectionVal){
+
+        if (projectionVal=="back"){
+
+            this.projection={x:"x",y:"y"}
+        }
+        else if(projectionVal=="lateral"){
+            this.projection={x:"z",y:"y"}
+
+        }
+        else if(projectionVal=="top"){
+            this.projection={x:"x",y:"z"}
+        }
+
+
+    }
+    this.treeView="arcsD"
+    this.getTreeView = function() {
+        return this.treeView
+    };
+    this.setTreeView=function(tree){
+        this.treeView=tree
+    }
 }
 
 
@@ -76,11 +104,39 @@ function defineGlobalAccessDataStructures (data,projection)
     this.nodeId=getKeys(this.segments)
     this.arteryLabels=arteryLabelsArcs;
     this.arteryLabelsRectangular=arteryLabels;
+    this.bloodFlowSymmetry=false
 
-    console.log(this.segments)
+
+    console.log(this.branchData)
+
+    this.setDataforArteries=function(value){
+        this.dataForArteries=value;
+    }
 
     var randomElementNodeId=this.nodeId[(Math.random() * this.nodeId.length) | 0]
-    this.treeData=generateBloodFlowWithBlockage(this.treeData,32768,parseInt(randomElementNodeId))
+    //this.treeData = treeTransformation(this.treeData,this.treeData)
+    //console.log(treeTransformation(this.treeData,this.treeData))
+    //bloodFlowtemp=generateBloodFlowWithBlockageForNewView(this.treeData,1000,parseInt(randomElementNodeId),this.dataForArteries)
+   // console.log(bloodFlowtemp)
+    bloodFlow=generateBloodFlowWithBlockage(this.treeData,this.branchData,1000,parseInt(randomElementNodeId),this.dataForArteries)
+    var treeData=bloodFlow[0]
+    var temptree = jQuery.extend(true, {}, treeData);
+    this.branchData=bloodFlow[2]
+    console.log(this.branchData)
+    nodes = d3.hierarchy(this.treeData);
+    bloodFlow1=testgenerateBloodFlowWithBlockage(nodes,32768,parseInt(randomElementNodeId),this.dataForArteries)
+    this.dataForArteries=bloodFlow1[1]
+    var abc=this.treeData;
+
+    this.hybridTreeData=hybridViz(temptree,temptree);
+
+    this.fetchBloodFlowSymmetry=function(){
+        return this.bloodFlowSymmetry
+    }
+    this.setBloodBlowSymmetry=function(val)
+    {
+        this.bloodFlowSymmetry=val
+    }
 
     this.fetchData=function(){
         return this.data
@@ -109,6 +165,13 @@ function defineGlobalAccessDataStructures (data,projection)
     }
     this.fetchArteryLabelsRectangular=function(){
         return this.arteryLabelsRectangular;
+    }
+
+    this.setDataforArteries=function(value){
+        this.dataForArteries=value;
+    }
+    this.fetchHybridData=function(value){
+        return this.hybridTreeData
     }
 
     this.changedataForArteries=function(nodes){
@@ -151,9 +214,16 @@ function defineGlobalAccessDataStructures (data,projection)
 
     this.changeProjection=function(data,projection){
         this.dataForScatterPlot=getDataForScatterPlot(data,projection);
+        tempDataArteries=this.dataForArteries
         this.dataForArteries=getDataforArteries(data,projection);
+
+        this.dataForArteries.forEach(function(d,index){
+          d.depth=tempDataArteries[index].depth
+          d.bloodFlow=tempDataArteries[index].bloodFlow
+        })
     }
 
 
 }
+
 

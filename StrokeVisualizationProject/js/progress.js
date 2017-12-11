@@ -1,13 +1,13 @@
 
 $(document).ready(function () {
     setTimeout(function(){
-        $('#bodies').show();
-    }, 1000);
+        $('.dashboard').show();
+    }, 5000);
 });
 
 
 $(function() {
     $(".preload").fadeOut(2000, function() {
-        $(".content").fadeIn(1000);
+        $(".dashboard").fadeIn(1000);
     });
 });

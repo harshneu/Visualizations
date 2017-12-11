@@ -203,7 +203,7 @@ if (!d3) { throw "d3 wasn't included!"};
     }
 
 
-    d3.phylogram.build = function(selector, nodes,globalDataStructure, options) {
+    d3.phylogram.build = function(selector, nodes,globalDataStructure,view, options) {
         var result=globalDataStructure.fetchData();
         options = options || {}
         var w = options.width || d3.select(selector).style('width') || d3.select(selector).attr('width'),
@@ -275,7 +275,20 @@ if (!d3) { throw "d3 wasn't included!"};
                 return diagonal(d,i,h,w)})
             .attr("fill", "none")
             .attr("stroke", function(d){
-                return color(d.source.type)
+                console.log(d)
+                if(view=="Normal") {
+                    return colorEncodingForBloodFlow(d.source.bloodFlow,d.source.depth)
+                    // if (d.source.bloodFlow == undefined) {
+                    //     return '#1b9e77'
+                    // }
+                    // else {
+                    //     return d3.interpolateRdYlBu((d.source.bloodFlow / (15000 / (Math.pow(2, (d.source.depth))))))
+                    // }
+                }
+                else{
+                    return colorSymmetry(d.source.type)
+                //return color(d.source.type)
+                    }
             })
             .attr("stroke-width", function(obj) {
                 var d=obj.source

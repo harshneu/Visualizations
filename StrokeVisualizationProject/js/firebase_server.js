@@ -19,7 +19,7 @@ var datapoint
 
 function readdata() {
 
-    //BG000
+    //BG0003
 datapoint=firebase.database().ref('/Points/BG0003_ColorCoded').once('value').then(function(snapshot) {
   //console.log(snapshot.val())
   return snapshot.val()
@@ -27,6 +27,7 @@ datapoint=firebase.database().ref('/Points/BG0003_ColorCoded').once('value').the
 return datapoint
 }
 
+readdata()
 
 
 
@@ -62,12 +63,12 @@ firebase.database().ref("Points/"+filename.split(".")[0]).set(data);
 //     list=$( "#fileNames" ).text()
 //     elongatedList=list.split("\n")
 //     fileList=elongatedList.slice(6,elongatedList.length-5)
-
+//
 //     //Creating swc objects
 //     generateSWCobjects(fileList)
 // });
-
-// //Generate SWC objects
+//
+// // //Generate SWC objects
 // function generateSWCobjects(fileList){
 //     var updateStep=1// Keeps track
 //     //Reading all the alternate only color coded files to convert
@@ -78,29 +79,29 @@ firebase.database().ref("Points/"+filename.split(".")[0]).set(data);
 //            // writeUserData(swcdata,fileList,updateStep)
 //             // console.log(swcdata)
 //             //Storing the files on Firbase
-
+//
 //         }, 'text');
 //     }
 // }
+//
+//
+//
+// // Get the swc data from any file that is passed to this file
+// //Writing one file at a time
+// function getfileData_StoreFirebase(path,filename)
+// {
+//
+//       var swcObject= $.get(path+filename, function(data) {
+//             swcdata=swc_parser(data)
+//             //console.log(swcdata)
+//              writeOneFile(swcdata,filename)
+//         }, 'text');
+//
+//     return swcObject
+// }
 
 
-
-// Get the swc data from any file that is passed to this file
-//Writing one file at a time
-function getfileData_StoreFirebase(path,filename)
-{
-    
-      var swcObject= $.get(path+filename, function(data) {
-            swcdata=swc_parser(data)
-            //console.log(swcdata)
-             writeOneFile(swcdata,filename)
-        }, 'text');
-
-    return swcObject
-}
-
-
-getfileData_StoreFirebase("testdata/","test.swc")
+// getfileData_StoreFirebase("testdata/","test.swc")
 
 
 

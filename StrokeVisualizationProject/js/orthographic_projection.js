@@ -3,6 +3,7 @@
 var Segments={}
 var globalDataStructures
 var data1
+var viewspecs
 
 // Script to convert 3D projection to 2D projection ... orthographic projections.
 function initializeView(){
@@ -10,21 +11,20 @@ promise=readdata()
 promise.then(function(data) {
 
     //Define projection and view, view options are Normal,Symmetry and projection options are : back,top
-    var viewspecs=new viewSpec("back","Normal")
-    view=viewspecs.getView();
-    projection=viewspecs.getProjection();
-
-    data1=data
-
-   //  //Define the global data access structures at one place and access them whererever they are required
-    globalDataStructures=new defineGlobalAccessDataStructures(data,projection)
+    viewspecs=new viewSpec("back","Normal","arcsD")
+     view=viewspecs.getView();
+     projection=viewspecs.getProjection();
 
 
-   // //  //drawArteries(getDataForScatterPlot(result),getDataforArteries(result))
-     drawBrainMap(globalDataStructures)
-   //
-   //  //  //Drawing dendrograms
-    drawDendrogram(globalDataStructures,view)
+    //  //Define the global data access structures at one place and access them whererever they are required
+     globalDataStructures=new defineGlobalAccessDataStructures(data,projection)
+
+
+    // //  //drawArteries(getDataForScatterPlot(result),getDataforArteries(result))
+      drawBrainMap(globalDataStructures,viewspecs)
+    //
+    //  //  //Drawing dendrograms
+     drawDendrogram(globalDataStructures,view)
    //
    // // //Rectangular Dendogram
   //drawphlyogram(globalDataStructures,view)
@@ -36,17 +36,13 @@ promise.then(function(data) {
 
 function changeTree(treeType){
 
-    var brainView="top"
-    var dendrogramView="Normal"
-    var viewspecs=new viewSpec(brainView,dendrogramView)
-    var view=viewspecs.getView();
-    var projection=viewspecs.getProjection();
+    viewspecs.setTreeView(treeType)
 
     if(treeType=="arcsD"){
-        drawDendrogram(globalDataStructures,view)
+        drawDendrogram(globalDataStructures,viewspecs.getView())
     }
     else{
-        drawphlyogram(globalDataStructures,view)
+        drawphlyogram(globalDataStructures,viewspecs.getView())
     }
 
     // //  //drawArteries(getDataForScatterPlot(result),getDataforArteries(result))
@@ -57,42 +53,57 @@ function changeTree(treeType){
 //This function should be called for changing the brain projection, just pass the projection as brainview variable and it will work, den
 function changeProjection(brainView){
 
-    var dendrogramView="Normal"
-
     var data=globalDataStructures.fetchData()
+    viewspecs.setProjection(brainView)
 
-    var viewspecs=new viewSpec(brainView,dendrogramView)
-    var view=viewspecs.getView();
-    var projection=viewspecs.getProjection();
-
-    globalDataStructures.changeProjection(data,projection)
-
+    globalDataStructures.changeProjection(data,viewspecs.getProjection())
 
     // //  //drawArteries(getDataForScatterPlot(result),getDataforArteries(result))
-    drawBrainMap(globalDataStructures)
-
+    drawBrainMap(globalDataStructures,viewspecs)
 }
 
 //This function should be called for switching between normal and symmetry view for both arc and rectangular dendorgrams, dendogramView=Symmetry and for arc dendogram treetype=arcsD and for rectangular dendrogram treetype=arcsR
-function changeView(brainView,dendrogramView,treeType){
+function changeView(dendrogramView){
+    if(dendrogramView=="Hybrid"){
+        //globalDataStructures.setBloodBlowSymmetry(true)
+    }
 
     var data=globalDataStructures.fetchData()
 
-    var viewspecs=new viewSpec(brainView,dendrogramView)
-    var view=viewspecs.getView();
-    var projection=viewspecs.getProjection();
-
+    viewspecs.setViewMode(dendrogramView)
 
     // //  //drawArteries(getDataForScatterPlot(result),getDataforArteries(result))
-    if(treeType=="arcsD"){
-        drawDendrogram(globalDataStructures,view)
+    if(viewspecs.getTreeView()=="arcsD"){
+        drawDendrogram(globalDataStructures,viewspecs.getView())
+        drawBrainMap(globalDataStructures,viewspecs)
+
     }
     else{
-        drawphlyogram(globalDataStructures,view)
+        drawphlyogram(globalDataStructures,viewspecs.getView())
+        drawBrainMap(globalDataStructures,viewspecs)
+
     }
 
 }
 
+function addBloodFlowInSymmetry(val){
+
+    globalDataStructures.setBloodBlowSymmetry(val)
+
+    console.log("addflow")
+
+    if(viewspecs.getTreeView()=="arcsD"){
+        drawDendrogram(globalDataStructures,viewspecs.getView())
+        drawBrainMap(globalDataStructures,viewspecs)
+
+    }
+    else{
+        drawphlyogram(globalDataStructures,viewspecs.getView())
+         drawBrainMap(globalDataStructures,viewspecs)
+
+    }
+
+}
 
 
 initializeView()
